@@ -2,11 +2,11 @@
 **2022 OCT UPDATE**: We dockerized and added Dockerfile to run it anywhere you want on any linux distro easily.
 Buggy script for configuring OpenConnect (ocserv) protocol on the server easily and automatically.
 ## Script Installation
-Tested on ubuntu 18.04 and 16.04.
+Tested on ubuntu 20.04 and 18.04 and 16.04 and debian 11.
 
 Download and saving script on your server:
 ```bash
-curl -O https://raw.githubusercontent.com/iw4p/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv/master/ocserv-install.sh
+curl -O https://raw.githubusercontent.com/hira-m2/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv/master/ocserv-install.sh
 ```
 
 Making script executable
@@ -27,7 +27,7 @@ sudo bash ocserv-install.sh
 1. Install Docker
 2. Build docker image
 ```bash
-docker build -t ocserv https://github.com/iw4p/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv.git
+docker build -t ocserv https://github.com/hira-m2/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv.git
 ```
 
 3. Run docker container
@@ -83,12 +83,6 @@ For making connection to your server, you can use `AnyConnect`, `OpenConnect` or
 
 And one more thing, contributions are welcome.
 
-### Issues
-Feel free to submit issues and enhancement requests or contact me via [vida.page/nima](https://vida.page/nima).
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=iw4p/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv&type=Date)](https://star-history.com/#iw4p/OpenConnect-Cisco-AnyConnect-VPN-Server-OneKey-ocserv&Date)
 
 
 ## More
