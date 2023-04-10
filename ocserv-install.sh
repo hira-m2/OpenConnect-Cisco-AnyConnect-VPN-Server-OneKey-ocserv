@@ -43,7 +43,8 @@ cp /etc/ocserv/ocserv.conf ~/certificates/
 
 sed -i -e 's@auth = "@#auth = "@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@auth = "pam@auth = "#auth = "pam"@g' /etc/ocserv/ocserv.conf
-sed -i -e 's@try-mtu-discovery = @try-mtu-discovery = true@g' /etc/ocserv/ocserv.conf
+sed -i -e 's@try-mtu-discovery = false @try-mtu-discovery = true@g' /etc/ocserv/ocserv.conf
+sed -i -e 's@udp-port = "@#udp-port = "@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@dns = @#dns = @g' /etc/ocserv/ocserv.conf
 sed -i -e 's@# multiple servers.@dns = 8.8.8.8@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@route =@#route =@g' /etc/ocserv/ocserv.conf
