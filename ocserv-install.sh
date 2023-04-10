@@ -109,9 +109,9 @@ ocpasswd -c /etc/ocserv/ocpasswd -u $username
 }
 
 addUserFromFile() {
-filename="/home/$(whoami)/users.txt"
-while read line; do
+filename="/home/$SUDO_USER/users.txt"
 n=1
+while read line; do
 # reading each line
 user="$(echo $line | awk '{ print $1}')"
 pass="$(echo $line | awk '{ print $2}')"
@@ -119,10 +119,6 @@ echo "$n- add user $user"
 echo "$pass" | ocpasswd -c /etc/ocserv/ocpasswd $user
 ((n++))
 done < $filename
-#user="$(echo $line | awk '{ print $1}')"
-#pass="$(echo $line | awk '{ print $2}')"
-#echo "add user $user"
-#echo "$pass" | ocpasswd -c /etc/ocserv/ocpasswd $user
 }
 
 if [[ "$EUID" -ne 0 ]]; then
