@@ -1,70 +1,48 @@
 #!/usr/bin/env bash
 
 install() {
+echo "Enter server url:"
+read url
 
 ip=$(hostname -I|cut -f1 -d ' ')
 echo "Your Server IP address is:$ip"
 echo -e "\e[32mInstalling gnutls-bin\e[39m"
 
-apt install gnutls-bin
-mkdir certificates
-cd certificates
+apt install -y gnutls-bin certbot ocserv
 
-cat << EOF > ca.tmpl
-cn = "VPN CA"
-organization = "Big Corp"
-serial = 1
-expiration_days = 3650
-ca
-signing_key
-cert_signing_key
-crl_signing_key
-EOF
-
-certtool --generate-privkey --outfile ca-key.pem
-certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem
-
-cat << EOF > server.tmpl
-#yourIP
-cn=$ip
-organization = "my company"
-expiration_days = 3650
-signing_key
-encryption_key
-tls_www_server
-EOF
-
-certtool --generate-privkey --outfile server-key.pem
-certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem
+certbot certonly --standalone --preferred-challenges http --agree-tos --email mehdi.mamhoui.s@gmail.com -d $url
 
 echo -e "\e[32mInstalling ocserv\e[39m"
-apt install ocserv
-cp /etc/ocserv/ocserv.conf ~/certificates/
 
 sed -i -e 's@auth = "@#auth = "@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@auth = "pam@auth = "#auth = "pam"@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@try-mtu-discovery = false @try-mtu-discovery = true@g' /etc/ocserv/ocserv.conf
-sed -i -e 's@udp-port = "@#udp-port = "@g' /etc/ocserv/ocserv.conf
-sed -i -e 's@dns = @#dns = @g' /etc/ocserv/ocserv.conf
-sed -i -e 's@# multiple servers.@dns = 8.8.8.8@g' /etc/ocserv/ocserv.conf
+sed -i -e 's@udp-port = @#udp-port = @g' /etc/ocserv/ocserv.conf
+sed -i -e "s@/etc/ssl/certs/ssl-cert-snakeoil.pem@/etc/letsencrypt/live/$url/fullchain.pem@g" /etc/ocserv/ocserv.conf
+sed -i -e "s@/etc/ssl/private/ssl-cert-snakeoil.key@/etc/letsencrypt"live/$url/privkey.pem@g" /etc/ocserv/ocserv.conf
+sed -i -e "s@default-domain = example.com@default-domain = $url@g" /etc/ocserv/ocserv.conf
+sed -i -e 's@ipv4-network = 192.168.1.0@ipv4-network = 192.168.5.0@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@route =@#route =@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@no-route =@#no-route =@g' /etc/ocserv/ocserv.conf
-sed -i -e 's@cisco-client-compat@cisco-client-compat = true@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@##auth = "#auth = "pam""@auth = "plain[passwd=/etc/ocserv/ocpasswd]"@g' /etc/ocserv/ocserv.conf
 
-sed -i -e 's@server-cert = /etc/ssl/certs/ssl-cert-snakeoil.pem@server-cert = /etc/ocserv/server-cert.pem@g' /etc/ocserv/ocserv.conf
-sed -i -e 's@server-key = /etc/ssl/private/ssl-cert-snakeoil.key@server-key = /etc/ocserv/server-key.pem@g' /etc/ocserv/ocserv.conf
 
 echo "Enter a username:"
 read username
 
 ocpasswd -c /etc/ocserv/ocpasswd $username
 iptables -t nat -A POSTROUTING -j MASQUERADE
+echo "#!/bin/sh
+
+iptables -t nat -A POSTROUTING -j MASQUERADE" >> /etc/network/if-pre-up.d/iptables-load
+chmod +x /etc/network/if-pre-up.d/iptables-load
 sed -i -e 's@#net.ipv4.ip_forward=@net.ipv4.ip_forward=@g' /etc/sysctl.conf
+echo "net.core.default_qdisc = fq
+net.ipv4.tcp_congestion_control = bbr
+net.ipv4.tcp_window_scaling = 1" >> /etc/sysctl.conf
 
 sysctl -p /etc/sysctl.conf
-cp ~/certificates/server-key.pem /etc/ocserv/
-cp ~/certificates/server-cert.pem /etc/ocserv/
+
 echo -e "\e[32mStopping ocserv service\e[39m"
 service ocserv stop
 echo -e "\e[32mStarting ocserv service\e[39m"
