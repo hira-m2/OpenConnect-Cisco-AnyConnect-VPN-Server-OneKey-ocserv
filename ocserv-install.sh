@@ -19,7 +19,7 @@ sed -i -e 's@auth = "pam@auth = "#auth = "pam"@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@try-mtu-discovery = false @try-mtu-discovery = true@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@udp-port = @#udp-port = @g' /etc/ocserv/ocserv.conf
 sed -i -e "s@/etc/ssl/certs/ssl-cert-snakeoil.pem@/etc/letsencrypt/live/$url/fullchain.pem@g" /etc/ocserv/ocserv.conf
-sed -i -e "s@/etc/ssl/private/ssl-cert-snakeoil.key@/etc/letsencrypt"live/$url/privkey.pem@g" /etc/ocserv/ocserv.conf
+sed -i -e "s@/etc/ssl/private/ssl-cert-snakeoil.key@/etc/letsencrypt/live/$url/privkey.pem@g" /etc/ocserv/ocserv.conf
 sed -i -e "s@default-domain = example.com@default-domain = $url@g" /etc/ocserv/ocserv.conf
 sed -i -e 's@ipv4-network = 192.168.1.0@ipv4-network = 192.168.5.0@g' /etc/ocserv/ocserv.conf
 sed -i -e 's@route =@#route =@g' /etc/ocserv/ocserv.conf
